@@ -1,11 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-const Bus = require("../assets/bus1.jpg");
+const Bus = require("../assets/busimg1.png");
 const Avatar = require("../assets/avatar2.png");
 
 const PassengerHome = () => {
     const userName = "Yasiru Deshan"; // Replace with user's name
-    const accountBalance = 100; // Replace with user's account balance
+    const accountBalance = 1436.00; // Replace with user's account balance
 
     return (
         <View style={styles.container}>
@@ -24,7 +24,7 @@ const PassengerHome = () => {
                <Image source={Bus} style={styles.busImage} />
            </View>
             <View style={styles.balanceContainer}>
-                <Text style={styles.balanceText}>Account Balance: ${accountBalance}</Text>
+                <Text style={styles.balanceText}>Account Balance: {accountBalance}</Text>
                 <TouchableOpacity style={styles.rechargeButton}>
                     <Text style={styles.buttonText}>Recharge Account</Text>
                 </TouchableOpacity>
@@ -64,22 +64,25 @@ const styles = StyleSheet.create({
 
     },
     busImage: {
-        width: 300,
-        height: 200,
+        width: 400,
+        height: 300,
         resizeMode: "contain",
         marginBottom: 20,
+        marginTop: 24
     },
     imageStyles:{
         alignItems:"center",
-        paddingTop: 36
+        paddingTop: 48
     },
 
     balanceContainer: {
         alignItems: "center",
     },
     balanceText: {
-        fontSize: 18,
+        marginTop: 72,
+        fontSize: 24,
         marginBottom: 10,
+
     },
     rechargeButton: {
         backgroundColor: "#9744be",
@@ -87,6 +90,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderRadius: 5,
         width:'100%',
+        marginTop: 24
 
     },
     buttonText: {
