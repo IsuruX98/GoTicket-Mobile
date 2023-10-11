@@ -5,7 +5,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import BottomNavBar from "./pages/BottomNavBar";
-import PassengerNav from "./pages/PassengerNav";
+import Passenger from "./pages/Passenger";
+import header from "@react-navigation/stack/src/views/Header/Header";
 
 const Stack = createNativeStackNavigator();
 
@@ -24,7 +25,7 @@ const App = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="GoTicket" component={BottomNavBar} />
-        <Stack.Screen name="PassengerNav" component={PassengerNav} />
+        <Stack.Screen name="PassengerNav" component={Passenger}  options={{headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
