@@ -5,7 +5,7 @@ const Avatar = require("../assets/avatar2.png");
 
 const PassengerHome = () => {
     const userName = "Yasiru Deshan"; // Replace with user's name
-    const accountBalance = 1436.00; // Replace with user's account balance
+    const accountBalance = 1498; // Replace with user's account balance
 
     return (
         <View style={styles.container}>

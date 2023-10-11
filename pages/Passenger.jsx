@@ -3,14 +3,15 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-
 import Profile from "../tabs/PassengerProfile";
 import MyQR from "../tabs/PassengerQR";
 import PassengerHome from "../tabs/PassengerHome";
+import MyTicket from "../tabs/MyTicket";
 
 const home = "Home";
 const profile = "Profile";
 const myQR = "My QR";
+const myTicket = "My Ticket";
 
 const Tab = createBottomTabNavigator();
 
@@ -30,6 +31,8 @@ const Passenger = () => {
                             iconName = focused ? "person" : "person-outline";
                         } else if (rn === myQR) {
                             iconName = focused ? "qr-code" : "qr-code-outline";
+                        } else if (rn === myTicket) {
+                            iconName = focused ? "receipt" : "receipt-outline"; //not working
                         }
 
                         return <Ionicons name={iconName} size={size} color={color} />;
@@ -52,11 +55,20 @@ const Passenger = () => {
                     options={{ title: "My QR", headerShown: false }} // Hide the header for this screen
                 />
 
+                {/* My Ticket Screen */}
+                <Tab.Screen
+                    name={myTicket}
+                    component={MyTicket}
+                    options={{ title: "My Ticket", headerShown: false }} // Hide the header for this screen
+                />
+
                 <Tab.Screen
                     name={profile}
                     component={Profile}
                     options={{ title: "Profile", headerShown: false }} // Hide the header for this screen
                 />
+
+
             </Tab.Navigator>
         </NavigationContainer>
     );
