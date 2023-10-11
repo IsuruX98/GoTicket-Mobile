@@ -5,64 +5,55 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 import Home from "../tabs/Home";
 import InspectorScan from "../tabs/InspectorScan";
-import About from "../tabs/About";
-import Payment from "../tabs/Payment";
+import Profile from "../tabs/InspectorProfile"; // Updated import
+// Removed import for About tab
 
 const home = "Home";
 const scan = "Scan QR";
-const about = "About";
-const payments = "Payments";
+const profile = "Profile"; // Updated tab name
 
 const Tab = createBottomTabNavigator();
 
-const BottomNavBar = () => {
+const BottomNavBar = ({navigation}) => {
   return (
-    <NavigationContainer independent={true}>
-      <Tab.Navigator
-        initialRouteName={home}
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-            let rn = route.name;
+      <NavigationContainer independent={true}>
+        <Tab.Navigator
+            initialRouteName={home}
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ focused, color, size }) => {
+                let iconName;
+                let rn = route.name;
 
-            if (rn === home) {
-              iconName = focused ? "home" : "home-outline";
-            } else if (rn === scan) {
-              iconName = focused ? "qr-code" : "qr-code-outline";
-            } else if (rn === about) {
-              iconName = focused
-                ? "information-circle"
-                : "information-circle-outline";
-            } else if (rn === payments) {
-              iconName = focused ? "cash" : "cash-outline";
-            }
+                if (rn === home) {
+                  iconName = focused ? "home" : "home-outline";
+                } else if (rn === scan) {
+                  iconName = focused ? "qr-code" : "qr-code-outline";
+                } else if (rn === profile) {
+                  iconName = focused ? "person" : "person-outline"; // Icon for profile tab
+                }
 
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-        })}
-      >
-        <Tab.Screen
-          name={home}
-          component={Home}
-          options={{ headerShown: false }}
-        />
-        <Tab.Screen
-          name={scan}
-          component={InspectorScan}
-          options={{ headerShown: false }}
-        />
-        <Tab.Screen
-          name={about}
-          component={About}
-          options={{ headerShown: false }}
-        />
-        <Tab.Screen
-          name={payments}
-          component={Payment}
-          options={{ headerShown: false }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+                return <Ionicons name={iconName} size={size} color={color} />;
+              },
+            })}
+        >
+          <Tab.Screen
+              name={home}
+              component={Home}
+              options={{ headerShown: false }}
+          />
+          <Tab.Screen
+              name={scan}
+              options={{ headerShown: false }}
+          >
+              {props => <InspectorScan {...props} navigation={navigation} />}
+          </Tab.Screen>
+          <Tab.Screen
+              name={profile}
+              component={Profile} // Updated component for profile tab
+              options={{ headerShown: false }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
   );
 };
 
