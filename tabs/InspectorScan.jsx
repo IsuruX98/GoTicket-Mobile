@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity  } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
 const InspectorScan = ({ navigation }) => {
@@ -55,14 +55,18 @@ const InspectorScan = ({ navigation }) => {
                         </>
                     )}
                     <View style={styles.buttonContainer}>
-                        <Button title={'Scan Again'} onPress={() => setScanned(false)} />
+                        <TouchableOpacity style={styles.touchableOpacityButton} onPress={() => setScanned(false)}>
+                            <Text style={styles.buttonText}>Scan Again</Text>
+                        </TouchableOpacity>
                         {typeof scannedData !== 'object' && (
-                            <Button
-                                title={'Generate Ticket'}
+                            <TouchableOpacity
+                                style={styles.touchableOpacityButton}
                                 onPress={() => {
                                     navigation.navigate('GenerateTicket', { scannedData });
                                 }}
-                            />
+                            >
+                                <Text style={styles.buttonText}>Generate Ticket</Text>
+                            </TouchableOpacity>
                         )}
                     </View>
                 </View>
@@ -89,7 +93,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         elevation: 5,
         marginTop: 20,
-        width: '80%',
+        width: '90%',
     },
     scanResultText: {
         fontSize: 24,
@@ -105,6 +109,20 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         width: '100%',
         marginTop: 20,
+        gap:30
+    },
+    touchableOpacityButton: {
+        backgroundColor: '#9744be',
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+        marginHorizontal: 10,
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 18,
+        textAlign: 'center',
     },
 });
 
