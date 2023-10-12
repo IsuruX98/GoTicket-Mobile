@@ -41,6 +41,7 @@
 
 
 
+ 
     "react-native-web": "~0.19.6"
   },
   "devDependencies": {
