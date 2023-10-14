@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Alert,
 } from "react-native";
 
 const Login = ({ navigation }) => {
@@ -13,11 +14,19 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // Implement your login logic here
-    // For example, you can use Firebase authentication
-
-    // After successful login, navigate to the Home screen
-    navigation.navigate("Home");
+    if (email == "user@gmail.com" && password == "1234") {
+      navigation.navigate("Home");
+    } else if (email == "admin@gmail.com" && password == "1234") {
+      navigation.navigate("admin");
+    } else if (email == "inspector@gmail.com" && password == "1234") {
+      navigation.navigate("inspector");
+    } else {
+      Alert.alert(
+        "Invalid Credentials",
+        "Please enter correct email and password.",
+        [{ text: "OK" }]
+      );
+    }
   };
 
   return (
@@ -58,6 +67,12 @@ const Login = ({ navigation }) => {
         onPress={() => navigation.navigate("PassengerNav")}
       >
         <Text style={styles.buttonText}>Login Passenger</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.loginButton}
+        onPress={() => navigation.navigate("Admin")}
+      >
+        <Text style={styles.buttonText}>Login Admin</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Register")}>
         <Text style={styles.signupText}>Don't have an account? Sign Up</Text>
