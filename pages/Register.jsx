@@ -5,9 +5,8 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Modal,
-  FlatList,
 } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
 
 const Register = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -15,7 +14,6 @@ const Register = ({ navigation }) => {
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isModalVisible, setModalVisible] = useState(false);
   const [selectedType, setSelectedType] = useState("passenger");
 
   const userTypes = [
@@ -34,84 +32,82 @@ const Register = ({ navigation }) => {
     }
   };
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
-
-  const selectUserType = (type) => {
-    setSelectedType(type);
-    toggleModal();
-  };
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Register</Text>
-      <TouchableOpacity style={styles.dropdownButton} onPress={toggleModal}>
-        <Text>{selectedType === "passenger" ? "Passenger" : "Inspector"}</Text>
-      </TouchableOpacity>
-      <Modal
-        visible={isModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={toggleModal}
-      >
-        <View style={styles.modalContainer}>
-          <FlatList
-            data={userTypes}
-            keyExtractor={(item) => item.value}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.modalItem}
-                onPress={() => selectUserType(item.value)}
-              >
-                <Text>{item.label}</Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      </Modal>
-      <TextInput
-        style={styles.input}
-        placeholder="Name"
-        onChangeText={(text) => setName(text)}
-        value={name}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        onChangeText={(text) => setEmail(text)}
-        value={email}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Mobile Number"
-        onChangeText={(text) => setMobile(text)}
-        value={mobile}
-        keyboardType="phone-pad"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        onChangeText={(text) => setPassword(text)}
-        value={password}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        secureTextEntry
-        onChangeText={(text) => setConfirmPassword(text)}
-        value={confirmPassword}
-      />
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Register</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-        <Text style={styles.signInText}>Already have an account? Sign In</Text>
-      </TouchableOpacity>
-    </View>
+      <View style={styles.container}>
+        <Text style={styles.heading}>Register</Text>
+        <RNPickerSelect
+            placeholder={{
+              label: "Select User Type",
+              value: null,
+            }}
+            items={userTypes}
+            onValueChange={(value) => setSelectedType(value)}
+            style={pickerSelectStyles}
+            value={selectedType}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Name"
+            onChangeText={(text) => setName(text)}
+            value={name}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Email"
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Mobile Number"
+            onChangeText={(text) => setMobile(text)}
+            value={mobile}
+            keyboardType="phone-pad"
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            secureTextEntry
+            onChangeText={(text) => setConfirmPassword(text)}
+            value={confirmPassword}
+        />
+        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+          <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.signInText}>Already have an account? Sign In</Text>
+        </TouchableOpacity>
+      </View>
   );
 };
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    height: 40,
+    width: "100%",
+    borderColor: "#333333",
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+    borderRadius: 10,
+  },
+  inputAndroid: {
+    height: 40,
+    width: "100%",
+    borderColor: "#333333",
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+    borderRadius: 10,
+  },
+});
 
 const styles = StyleSheet.create({
   container: {
