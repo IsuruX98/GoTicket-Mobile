@@ -96,6 +96,7 @@ const routeData = [
 const GenerateTicket = () => {
   const route = useRoute();
   const { scannedData } = route.params;
+  const userId = 123;
   const routeName = "EX 1-12/32";
   const busId = "ND123";
   const [selectedRoute, setSelectedRoute] = useState(null);
