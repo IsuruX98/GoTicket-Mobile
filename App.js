@@ -9,13 +9,6 @@ import Passenger from "./pages/Passenger";
 import header from "@react-navigation/stack/src/views/Header/Header";
 
 import GenerateTicket from "./pages/GenerateTicket";
-import AdminNavBar from "./pages/AdminNavBar";
-import Routes from "./tabs/Routes";
-import AddRouteScreen from "./pages/AddRouteScreen";
-import Schedules from "./tabs/Schedules";
-import AddScheduleScreen from "./pages/AddScheduleScreen";
-import UpdateRouteScreen from "./pages/UpdateRouteScreen";
-import UpdateScheduleScreen from "./pages/UpdateScheduleScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,11 +32,6 @@ const App = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="Admin"
-          component={AdminNavBar}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
           name="PassengerNav"
           component={Passenger}
           options={{ headerShown: false }}
@@ -56,28 +44,7 @@ const App = () => {
             screenProps: { navigation },
           })}
         />
-        <Stack.Screen name="Routes" component={Routes} />
-        <Stack.Screen
-          name="AddRoute"
-          component={AddRouteScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="Schedules" component={Schedules} />
-        <Stack.Screen
-          name="AddSchedule"
-          component={AddScheduleScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="UpdateRoute"
-          component={UpdateRouteScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="UpdateSchedule"
-          component={UpdateScheduleScreen}
-          options={{ headerShown: false }}
-        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

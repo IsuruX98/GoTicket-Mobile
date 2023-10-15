@@ -14,11 +14,9 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    if (email == "user@gmail.com" && password == "1234") {
+    if (email === "user@gmail.com" && password === "1234") {
       navigation.navigate("Home");
-    } else if (email == "admin@gmail.com" && password == "1234") {
-      navigation.navigate("admin");
-    } else if (email == "inspector@gmail.com" && password == "1234") {
+    }  else if (email === "inspector@gmail.com" && password === "1234") {
       navigation.navigate("inspector");
     } else {
       Alert.alert(
@@ -67,12 +65,6 @@ const Login = ({ navigation }) => {
         onPress={() => navigation.navigate("PassengerNav")}
       >
         <Text style={styles.buttonText}>Login Passenger</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => navigation.navigate("Admin")}
-      >
-        <Text style={styles.buttonText}>Login Admin</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Register")}>
         <Text style={styles.signupText}>Don't have an account? Sign Up</Text>
