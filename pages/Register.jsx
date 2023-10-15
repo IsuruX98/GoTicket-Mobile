@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
+import axios from "../apis/axios";
 
 const Register = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -22,14 +23,30 @@ const Register = ({ navigation }) => {
   ];
 
   const handleRegister = () => {
-    // After successful registration, navigate to the appropriate screen based on selectedType
-    if (selectedType === "passenger") {
-      // Navigate to Passenger Dashboard
-      navigation.navigate("PassengerDashboard");
-    } else if (selectedType === "inspector") {
-      // Navigate to Inspector Dashboard
-      navigation.navigate("InspectorDashboard");
-    }
+    const registrationData = {
+      name: name,
+      contactNumber: mobile,
+      email: email,
+      password: password,
+      role: selectedType.charAt(0).toUpperCase() + selectedType.slice(1), // Capitalize the first letter
+      uniqueField: "WP-1024",
+    };
+
+    // Make a POST request to the registration endpoint
+    axios.post("user/signup", registrationData)
+        .then(response => {
+          // Registration successful, navigate to the appropriate screen
+          if (selectedType === "passenger") {
+            navigation.navigate("Login");
+          } else if (selectedType === "inspector") {
+            navigation.navigate("Login");
+          }
+        })
+        .catch(error => {
+          // Handle registration error, e.g., show an error message
+          console.error("Registration failed:", error);
+          // You can show an error message to the user here
+        });
   };
 
   return (

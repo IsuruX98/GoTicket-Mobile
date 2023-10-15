@@ -8,23 +8,45 @@ import {
   Image,
   Alert,
 } from "react-native";
+import axios from "../apis/axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import jwt_decode from "jwt-decode";
+
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    if (email === "user@gmail.com" && password === "1234") {
-      navigation.navigate("Home");
-    }  else if (email === "inspector@gmail.com" && password === "1234") {
-      navigation.navigate("inspector");
-    } else {
-      Alert.alert(
-        "Invalid Credentials",
-        "Please enter correct email and password.",
-        [{ text: "OK" }]
-      );
-    }
+    // Make a POST request to the login endpoint with email and password
+    axios.post("user/login", {
+      email: email,
+      password: password
+    })
+        .then(async response => {
+          // Save the token to AsyncStorage
+          await AsyncStorage.setItem('JWT', response.data.token);
+
+          // Decode the token and log its contents
+          const decodedToken = jwt_decode(response.data.token);
+          console.log("Decoded Token:", decodedToken);
+
+            const userRole = decodedToken.role;
+
+            // Navigate based on user role
+            if (userRole === "Inspector") {
+                navigation.navigate("GoTicket");
+            } else if(userRole === "Passenger"){
+                navigation.navigate("PassengerNav");
+            }
+        })
+        .catch(error => {
+          Alert.alert(
+              "Invalid Credentials",
+              "Please enter correct email and password.",
+              [{ text: "OK" }]
+          );
+        });
   };
 
   return (
@@ -56,15 +78,9 @@ const Login = ({ navigation }) => {
       </View>
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={() => navigation.navigate("GoTicket")}
+        onPress={handleLogin}
       >
-        <Text style={styles.buttonText}>Login Inspector</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => navigation.navigate("PassengerNav")}
-      >
-        <Text style={styles.buttonText}>Login Passenger</Text>
+        <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Register")}>
         <Text style={styles.signupText}>Don't have an account? Sign Up</Text>
