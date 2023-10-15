@@ -1,8 +1,22 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet,TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BusAccount = () => {
+const BusAccount = ({navigation}) => {
+
+    const handleLogout = async () => {
+        try {
+            // Remove the token from AsyncStorage
+            await AsyncStorage.removeItem('JWT');
+            // Navigate to the login screen or any other screen you want to show after logout
+            navigation.navigate('Login');
+        } catch (error) {
+            // Handle AsyncStorage error, if any
+            console.error('Error removing token from AsyncStorage:', error);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.heading}>Bus Account</Text>
@@ -20,6 +34,9 @@ const BusAccount = () => {
                 <Text style={styles.value}>6789</Text>
                 <Text style={styles.label}>Income:</Text>
                 <Text style={styles.value}>Rs.6789.00</Text>
+                <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+                    <Text style={styles.buttonTxt}>Logout</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -53,6 +70,18 @@ const styles = StyleSheet.create({
         color: "#555",
         marginBottom: 10,
     },
+    logoutButton: {
+        marginTop: 20,
+        backgroundColor: "#9744be",
+        paddingHorizontal: 40,
+        paddingVertical:15,
+        borderRadius: 5,
+
+    },
+    buttonTxt:{
+        fontWeight:"bold",
+        color:"#fff"
+    }
 });
 
 export default BusAccount;
