@@ -11,6 +11,9 @@ import {
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { useRoute } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import jwt_decode from "jwt-decode";
+import axios from "../apis/axios";
 
 const routeData = [
   {
@@ -103,8 +106,44 @@ const GenerateTicket = () => {
   const [numberOfTickets, setNumberOfTickets] = useState(1);
   const [qrData, setQRData] = useState("");
 
+  const [loggedInUser,setLoggedInUser] = useState({})
+  const [loggedInUserEmail,setLoggedInUserEmail] = useState(null)
+  let users = {}
+
   useEffect(() => {
-    const foundRoute = routeData.find((route) => route.routeName === routeName);
+    // Check the token in AsyncStorage when the component mounts
+    const checkToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem('JWT');
+
+        if (token) {
+          const decodedToken = jwt_decode(token);
+          const userEmail = String(decodedToken.sub); // Convert to string
+          setLoggedInUserEmail(userEmail);
+
+          if (userEmail){
+            const response = await axios.get("bus");
+            const data = response.data.body;
+
+            const usersWithEmails = data
+                .find(entry => entry.user && userEmail === entry.user.email)
+            users = usersWithEmails
+            setLoggedInUser(usersWithEmails);
+          }
+
+        } else {
+          console.log('No token found in AsyncStorage');
+        }
+      } catch (error) {
+        console.error('Error reading token from AsyncStorage:', error);
+      }
+    };
+
+    checkToken(); // Call the function when the component mounts
+  }, []);
+
+  useEffect(() => {
+    const foundRoute = loggedInUser.route?loggedInUser.route:{}
     if (!foundRoute) {
       Alert.alert("Error", "Route not found.");
     } else {
@@ -147,25 +186,25 @@ const GenerateTicket = () => {
         <TextInput
           style={styles.inputField}
           placeholder="Bus ID"
-          value={busId}
+          value={loggedInUser.busNo}
           editable={false}
         />
         <TextInput
           style={styles.inputField}
           placeholder="Route Name"
-          value={routeName}
+          value={loggedInUser.route?loggedInUser.route.routeName:''}
           editable={false}
         />
         <TextInput
           style={styles.inputField}
           placeholder="Start Station"
-          value={selectedRoute ? selectedRoute.startStation : ""}
+          value={loggedInUser.route?loggedInUser.route.startPoint:''}
           editable={false}
         />
         <TextInput
           style={styles.inputField}
           placeholder="End Station"
-          value={selectedRoute ? selectedRoute.endStation : ""}
+          value={loggedInUser.route?loggedInUser.route.endPoint:''}
           editable={false}
         />
         <TextInput

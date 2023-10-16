@@ -29,7 +29,7 @@ const Login = ({ navigation }) => {
 
           // Decode the token and log its contents
           const decodedToken = jwt_decode(response.data.token);
-          console.log("Decoded Token:", decodedToken);
+          //console.log("Decoded Token:", decodedToken);
 
             const userRole = decodedToken.role;
 
