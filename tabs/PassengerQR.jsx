@@ -1,25 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import QRCode from "react-native-qrcode-svg";
-import Axios from "axios";
+import Axios from "../apis/axios";
 
 const PassengerQR = () => {
-    const [profileData, setProfileData] = useState({});
+
+    const[profileData, setProfileData] = useState({});
 
     useEffect(() => {
-        // Fetch user data from the backend
-        Axios.get("http://localhost:8090/passenger/")
+
+        Axios.get("passenger/")
             .then((response) => {
-                // Assuming your backend response is an object containing user data
+
                 setProfileData(response.data);
             })
             .catch((error) => {
-                console.error("Error fetching user data: ", error);
+
+                console.error("Error fetching data from backend:", error);
             });
-    }, []); // Empty dependency array ensures this effect runs once after the initial render
+    }, []);
+
+    const passengerInfo = {
+        id : profileData.id,
+        name : profileData.name
+    }
+
+    const jsonString = JSON.stringify(passengerInfo);
 
     // Generate the QR code data using the userId from profileData
-    const qrCodeData = profileData.id;
+    const qrCodeData = jsonString;
+    console.log(profileData.id)
 
     return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

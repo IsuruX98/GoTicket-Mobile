@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 const Avatar = require("../assets/User-avatar.svg.png");
-import Axios from "axios";
+import Axios from "../apis/axios";
 
 const PassengerProfile = () => {
 
@@ -9,9 +9,9 @@ const PassengerProfile = () => {
 
     useEffect(() => {
 
-        Axios.get("http://localhost:8090/passenger/")
+        Axios.get("passenger/")
             .then((response) => {
-
+                console.log(response.data)
                 setProfileData(response.data);
             })
             .catch((error) => {
