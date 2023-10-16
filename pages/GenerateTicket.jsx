@@ -14,94 +14,9 @@ import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import jwt_decode from "jwt-decode";
 import axios from "../apis/axios";
-
-const routeData = [
-  {
-    routeName: "EX 1",
-    startStation: "Galle",
-    endStation: "Makubura",
-    price: 850.0,
-  },
-  {
-    routeName: "EX 1-1",
-    startStation: "Makubura",
-    endStation: "Mathara",
-    price: 1070.0,
-  },
-  {
-    routeName: "EX 1-2",
-    startStation: "Kaduwela",
-    endStation: "Mathara",
-    price: 1150.0,
-  },
-  {
-    routeName: "EX 1-5/26",
-    startStation: "Colombo",
-    endStation: "Hakmana",
-    price: 1380.0,
-  },
-  {
-    routeName: "EX 1-7/26",
-    startStation: "Colombo",
-    endStation: "Middeniya",
-    price: 1670.0,
-  },
-  {
-    routeName: "EX 1-9/211",
-    startStation: "Colombo",
-    endStation: "Abilipitiya",
-    price: 1660.0,
-  },
-  {
-    routeName: "EX 1-10/60",
-    startStation: "Colombo",
-    endStation: "Akurassa",
-    price: 1160.0,
-  },
-  {
-    routeName: "EX 1-11/32",
-    startStation: "Colombo",
-    endStation: "Virakatiya",
-    price: 1530.0,
-  },
-  {
-    routeName: "EX 1-12/32",
-    startStation: "Colombo",
-    endStation: "Katharagama",
-    price: 2080.0,
-  },
-  {
-    routeName: "EX 1-13/353",
-    startStation: "Colombo",
-    endStation: "Deyyandara",
-    price: 1470.0,
-  },
-  {
-    routeName: "EX 1-14/60",
-    startStation: "Colombo",
-    endStation: "Deniyaya",
-    price: 1500.0,
-  },
-  {
-    routeName: "EX 1-16",
-    startStation: "Colombo",
-    endStation: "Alpitiya",
-    price: 770.0,
-  },
-  {
-    routeName: "EX 1-18",
-    startStation: "Colombo",
-    endStation: "Mathara",
-    price: 1190.0,
-  },
-];
-
 const GenerateTicket = () => {
   const route = useRoute();
   const { scannedData } = route.params;
-  const userId = 123;
-  const routeName = "EX 1-12/32";
-  const busId = "ND123";
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [numberOfTickets, setNumberOfTickets] = useState(1);
   const [qrData, setQRData] = useState("");
@@ -128,7 +43,7 @@ const GenerateTicket = () => {
             const usersWithEmails = data
                 .find(entry => entry.user && userEmail === entry.user.email)
             users = usersWithEmails
-            setLoggedInUser(usersWithEmails);
+            setLoggedInUser(usersWithEmails)
           }
 
         } else {
@@ -157,10 +72,10 @@ const GenerateTicket = () => {
       name: "John Doe",
       date: new Date().toLocaleDateString(),
       time: new Date().toLocaleTimeString(),
-      route: selectedRoute ? selectedRoute.routeName : "",
-      startStation: selectedRoute ? selectedRoute.startStation : "",
-      endStation: selectedRoute ? selectedRoute.endStation : "",
-      price: selectedRoute ? selectedRoute.price * tickets : 0,
+      route: loggedInUser.route?loggedInUser.route.routeName:'',
+      startStation: loggedInUser.route?loggedInUser.route.startPoint:'',
+      endStation: loggedInUser.route?loggedInUser.route.endPoint:'',
+      price: loggedInUser.route ? loggedInUser.route.ticketPrice : 1,
       numberOfTickets: tickets,
     };
 
@@ -168,7 +83,7 @@ const GenerateTicket = () => {
     setQRData(jsonTicketDetails);
   }, [numberOfTickets, selectedRoute]);
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     const tickets = parseInt(numberOfTickets, 10);
 
     if (tickets <= 0) {
@@ -176,7 +91,71 @@ const GenerateTicket = () => {
       return;
     }
 
+    const confirmed = await new Promise((resolve) => {
+      Alert.alert(
+          "Confirmation",
+          `Are you sure you want to purchase ${tickets} ticket(s)?`,
+          [
+            {
+              text: "Cancel",
+              onPress: () => resolve(false),
+              style: "cancel",
+            },
+            {
+              text: "Confirm",
+              onPress: () => resolve(true),
+            },
+          ],
+          { cancelable: false }
+      );
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
     Keyboard.dismiss();
+
+    let price = loggedInUser.route ? loggedInUser.route.ticketPrice : 1
+    let userId = loggedInUser.route ? loggedInUser.user.id : ''
+    let busNo = loggedInUser.busNo
+
+    const deductFromUser = async () => {
+      try {
+        const data = await axios.put(`balance/deduct/${userId}/${price*1}`);
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    await deductFromUser();
+
+    const addForBus = async () => {
+      try {
+        const data = await axios.post(`bus/add/${busNo}/${price*1}`);
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    await addForBus();
+
+    const saveTicket = async () => {
+      try {
+        const ticketData = {
+          id: 3,
+          qrData: qrData,
+        };
+
+        const response = await axios.post('tickets', ticketData);
+        console.log('Ticket saved successfully:');
+      } catch (error) {
+        console.error('Error saving ticket:', error);
+      }
+    };
+
+    await saveTicket();
+
+    Alert.alert("Success", "Tickets purchased successfully!");
+
   };
 
   return (
@@ -216,7 +195,7 @@ const GenerateTicket = () => {
         />
         <Text style={styles.priceText}>
           Ticket Price: Rs.{" "}
-          {selectedRoute ? selectedRoute.price * numberOfTickets : 0}
+          {loggedInUser.route?loggedInUser.route.ticketPrice * numberOfTickets : 0}
         </Text>
         <TouchableOpacity
           style={styles.purchaseButton}
