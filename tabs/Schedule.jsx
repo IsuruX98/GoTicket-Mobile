@@ -1,40 +1,85 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity ,FlatList} from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+    View,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    FlatList,
+    ActivityIndicator
+} from "react-native";
 import { Calendar } from 'react-native-calendars';
 import Modal from 'react-native-modal';
 import ScheduleItem from "../components/ScheduleItem";
+import axios from "../apis/axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import jwt_decode from "jwt-decode";
 
 const Schedule = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [scheduleData, setScheduleData] = useState([
-        { scheduleId: "SD123", startTime: "08:00 AM", endTime: "10:00 AM", date: "05-08-23" },
-        { scheduleId: "SD124", startTime: "10:30 AM", endTime: "12:30 PM", date: "12-10-23" },
-        { scheduleId: "SD125", startTime: "01:00 PM", endTime: "03:00 PM", date: "12-10-23" },
-        { scheduleId: "SD126", startTime: "03:30 PM", endTime: "05:30 PM", date: "05-06-23" },
-        { scheduleId: "SD127", startTime: "06:00 PM", endTime: "08:00 PM", date: "05-07-23" },
-        { scheduleId: "SD128", startTime: "08:30 PM", endTime: "10:30 PM", date: "05-03-23" },
-        { scheduleId: "SD129", startTime: "11:00 PM", endTime: "01:00 AM", date: "12-10-23" },
-        { scheduleId: "SD130", startTime: "01:30 AM", endTime: "03:30 AM", date: "12-10-23" },
-    ]);
+    const [schedules, setSchedules] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [loggedInUser, setLoggedInUser] = useState([]);
+    const [loggedInUserEmail, setLoggedInUserEmail] = useState(null);
 
-    const getFormattedDate = (date) => {
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const year = date.getFullYear();
-        return `${day}-${month}-${String(year).substr(-2)}`;
+    useEffect(() => {
+        const checkToken = async () => {
+            try {
+                const token = await AsyncStorage.getItem('JWT');
+
+                if (token) {
+                    const decodedToken = jwt_decode(token);
+                    const userEmail = String(decodedToken.sub);
+                    setLoggedInUserEmail(userEmail);
+
+                    if (userEmail) {
+                        const response = await axios.get("bus");
+                        const data = response.data.body;
+                        const usersWithEmails = data.find(entry => entry.user && userEmail === entry.user.email);
+                        setLoggedInUser(usersWithEmails);
+                    }
+                } else {
+                    console.log('No token found in AsyncStorage');
+                }
+            } catch (error) {
+                console.error('Error reading token from AsyncStorage:', error);
+            }
+        };
+
+        checkToken();
+    }, []);
+
+    const convertDateFormat = (dateString) => {
+        const [year, month, day] = dateString.split("-");
+        return `${day}-${month}-${year.substr(2, 2)}`;
     };
 
-    const [schedules, setSchedules] = useState(
-        scheduleData.filter((item) => item.date === getFormattedDate(selectedDate))
-    );
+    const fetchScheduleData = async (date = new Date()) => {
+        setIsLoading(true);
+        try {
+            const response = await axios.get("schedule");
+            const data = response.data.body;
+            const formattedDate = convertDateFormat(date.toISOString().split('T')[0]);
+            const filteredSchedules = data.filter(item => {
+                const itemDate = convertDateFormat(item.date);
+                return itemDate === formattedDate && item.bus.busNo === loggedInUser.busNo;
+            });
+            setSchedules(filteredSchedules);
+        } catch (error) {
+            console.error("Error fetching schedule data: ", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-
+    useEffect(()=>{
+        fetchScheduleData();
+    },[])
 
     const handleDayPress = (day) => {
         const selectedDate = new Date(day.dateString);
         setSelectedDate(selectedDate);
-        setSchedules(scheduleData.filter((item) => item.date === getFormattedDate(selectedDate)));
+        fetchScheduleData(selectedDate);
         hideDatePicker();
     };
 
@@ -51,22 +96,27 @@ const Schedule = () => {
         setDatePickerVisibility(false);
     };
 
+
     return (
         <View style={styles.container}>
-            {schedules.length === 0 ? (
-                <Text style={styles.noScheduleText}>No schedules for selected date.</Text>
+            {isLoading ? (
+                <ActivityIndicator size="large" color="#9744be" style={styles.loader} />
             ) : (
-                <>
-                    <Text style={styles.headerText}>Schedule for {getFormattedDate(selectedDate)}</Text>
-                    <FlatList
-                        style={styles.flatList}
-                        data={schedules}
-                        keyExtractor={(item) => item.scheduleId}
-                        renderItem={({ item }) => (
-                            <ScheduleItem schedule={item} onDelete={handleComplete} />
-                        )}
-                    />
-                </>
+                schedules.length === 0 ? (
+                    <Text style={styles.noScheduleText}>No schedules for selected date.</Text>
+                ) : (
+                    <>
+                        <Text style={styles.headerText}>Schedule for {selectedDate.toDateString()}</Text>
+                        <FlatList
+                            style={styles.flatList}
+                            data={schedules}
+                            keyExtractor={(item) => item.scheduleId}
+                            renderItem={({ item }) => (
+                                <ScheduleItem schedule={item} onDelete={handleComplete} />
+                            )}
+                        />
+                    </>
+                )
             )}
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={showDatePicker}>
@@ -81,7 +131,7 @@ const Schedule = () => {
                     <View style={styles.modalContainer}>
                         <Calendar
                             current={selectedDate.toISOString().split('T')[0]}
-                            minDate={new Date().toISOString().split('T')[0]} // Set minDate to the current date
+                            minDate={new Date().toISOString().split('T')[0]}
                             onDayPress={(day) => handleDayPress(day)}
                             markedDates={{
                                 [selectedDate.toISOString().split('T')[0]]: { selected: true, selectedColor: '#9744be' },
@@ -89,12 +139,6 @@ const Schedule = () => {
                         />
                     </View>
                 </Modal>
-                <TouchableOpacity
-                    style={[styles.button, { backgroundColor: "#9744be" }]}
-                    onPress={() => setSchedules(scheduleData)}
-                >
-                    <Text style={styles.buttonText}>Refresh</Text>
-                </TouchableOpacity>
             </View>
         </View>
     );
@@ -106,6 +150,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingTop: 80,
         backgroundColor: "#fff",
+    },
+    loader: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
     },
     headerText: {
         color: "#9744be",
@@ -128,7 +177,7 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: "row",
-        justifyContent: "space-between",
+        justifyContent: "center",
         width: "100%",
         marginBottom: 20,
     },
@@ -137,13 +186,18 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 24,
         borderRadius: 8,
-        width: "48%",
+        width: "100%",
     },
     buttonText: {
         color: "#fff",
         fontWeight: "bold",
         fontSize: 18,
         textAlign: "center",
+    },
+    modalContainer: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
     },
 });
 
