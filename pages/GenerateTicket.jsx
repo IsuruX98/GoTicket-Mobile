@@ -99,9 +99,6 @@ const routeData = [
 const GenerateTicket = () => {
   const route = useRoute();
   const { scannedData } = route.params;
-  const userId = 123;
-  const routeName = "EX 1-12/32";
-  const busId = "ND123";
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [numberOfTickets, setNumberOfTickets] = useState(1);
   const [qrData, setQRData] = useState("");
@@ -128,7 +125,7 @@ const GenerateTicket = () => {
             const usersWithEmails = data
                 .find(entry => entry.user && userEmail === entry.user.email)
             users = usersWithEmails
-            setLoggedInUser(usersWithEmails);
+            setLoggedInUser(usersWithEmails)
           }
 
         } else {
@@ -148,6 +145,7 @@ const GenerateTicket = () => {
       Alert.alert("Error", "Route not found.");
     } else {
       setSelectedRoute(foundRoute);
+      console.log(foundRoute)
     }
   }, [scannedData]);
 
@@ -157,10 +155,10 @@ const GenerateTicket = () => {
       name: "John Doe",
       date: new Date().toLocaleDateString(),
       time: new Date().toLocaleTimeString(),
-      route: selectedRoute ? selectedRoute.routeName : "",
-      startStation: selectedRoute ? selectedRoute.startStation : "",
-      endStation: selectedRoute ? selectedRoute.endStation : "",
-      price: selectedRoute ? selectedRoute.price * tickets : 0,
+      route: loggedInUser.route?loggedInUser.route.routeName:'',
+      startStation: loggedInUser.route?loggedInUser.route.startPoint:'',
+      endStation: loggedInUser.route?loggedInUser.route.endPoint:'',
+      price: loggedInUser.route ? loggedInUser.route.ticketPrice : 1,
       numberOfTickets: tickets,
     };
 
@@ -168,7 +166,7 @@ const GenerateTicket = () => {
     setQRData(jsonTicketDetails);
   }, [numberOfTickets, selectedRoute]);
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     const tickets = parseInt(numberOfTickets, 10);
 
     if (tickets <= 0) {
@@ -176,7 +174,75 @@ const GenerateTicket = () => {
       return;
     }
 
+    const confirmed = await new Promise((resolve) => {
+      Alert.alert(
+          "Confirmation",
+          `Are you sure you want to purchase ${tickets} ticket(s)?`,
+          [
+            {
+              text: "Cancel",
+              onPress: () => resolve(false),
+              style: "cancel",
+            },
+            {
+              text: "Confirm",
+              onPress: () => resolve(true),
+            },
+          ],
+          { cancelable: false }
+      );
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
     Keyboard.dismiss();
+
+    let price = loggedInUser.route ? loggedInUser.route.ticketPrice : 1
+    let userId = loggedInUser.route ? loggedInUser.user.id : ''
+    let busNo = loggedInUser.busNo
+
+    console.log(price)
+    console.log(userId)
+    console.log(busNo)
+
+    const deductFromUser = async () => {
+      try {
+        const data = await axios.put(`balance/deduct/${userId}/${price*1}`);
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    await deductFromUser();
+
+    const addForBus = async () => {
+      try {
+        const data = await axios.post(`bus/add/${busNo}/${price*1}`);
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    await addForBus();
+
+    const saveTicket = async () => {
+      try {
+        const ticketData = {
+          id: 3,
+          qrData: qrData,
+        };
+
+        const response = await axios.post('tickets', ticketData);
+        console.log('Ticket saved successfully:', response.data);
+      } catch (error) {
+        console.error('Error saving ticket:', error);
+      }
+    };
+
+    await saveTicket();
+
+    Alert.alert("Success", "Tickets purchased successfully!");
+
   };
 
   return (
@@ -216,7 +282,7 @@ const GenerateTicket = () => {
         />
         <Text style={styles.priceText}>
           Ticket Price: Rs.{" "}
-          {selectedRoute ? selectedRoute.price * numberOfTickets : 0}
+          {loggedInUser.route?loggedInUser.route.ticketPrice * numberOfTickets : 0}
         </Text>
         <TouchableOpacity
           style={styles.purchaseButton}

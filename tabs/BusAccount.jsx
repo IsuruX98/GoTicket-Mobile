@@ -77,7 +77,7 @@ const BusAccount = ({navigation}) => {
                 </TouchableOpacity>
             </View>
         </View>
-    );
+    );ticketPrice
 };
 
 const styles = StyleSheet.create({
