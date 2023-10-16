@@ -14,88 +14,6 @@ import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import jwt_decode from "jwt-decode";
 import axios from "../apis/axios";
-
-const routeData = [
-  {
-    routeName: "EX 1",
-    startStation: "Galle",
-    endStation: "Makubura",
-    price: 850.0,
-  },
-  {
-    routeName: "EX 1-1",
-    startStation: "Makubura",
-    endStation: "Mathara",
-    price: 1070.0,
-  },
-  {
-    routeName: "EX 1-2",
-    startStation: "Kaduwela",
-    endStation: "Mathara",
-    price: 1150.0,
-  },
-  {
-    routeName: "EX 1-5/26",
-    startStation: "Colombo",
-    endStation: "Hakmana",
-    price: 1380.0,
-  },
-  {
-    routeName: "EX 1-7/26",
-    startStation: "Colombo",
-    endStation: "Middeniya",
-    price: 1670.0,
-  },
-  {
-    routeName: "EX 1-9/211",
-    startStation: "Colombo",
-    endStation: "Abilipitiya",
-    price: 1660.0,
-  },
-  {
-    routeName: "EX 1-10/60",
-    startStation: "Colombo",
-    endStation: "Akurassa",
-    price: 1160.0,
-  },
-  {
-    routeName: "EX 1-11/32",
-    startStation: "Colombo",
-    endStation: "Virakatiya",
-    price: 1530.0,
-  },
-  {
-    routeName: "EX 1-12/32",
-    startStation: "Colombo",
-    endStation: "Katharagama",
-    price: 2080.0,
-  },
-  {
-    routeName: "EX 1-13/353",
-    startStation: "Colombo",
-    endStation: "Deyyandara",
-    price: 1470.0,
-  },
-  {
-    routeName: "EX 1-14/60",
-    startStation: "Colombo",
-    endStation: "Deniyaya",
-    price: 1500.0,
-  },
-  {
-    routeName: "EX 1-16",
-    startStation: "Colombo",
-    endStation: "Alpitiya",
-    price: 770.0,
-  },
-  {
-    routeName: "EX 1-18",
-    startStation: "Colombo",
-    endStation: "Mathara",
-    price: 1190.0,
-  },
-];
-
 const GenerateTicket = () => {
   const route = useRoute();
   const { scannedData } = route.params;
@@ -145,7 +63,6 @@ const GenerateTicket = () => {
       Alert.alert("Error", "Route not found.");
     } else {
       setSelectedRoute(foundRoute);
-      console.log(foundRoute)
     }
   }, [scannedData]);
 
@@ -203,10 +120,6 @@ const GenerateTicket = () => {
     let userId = loggedInUser.route ? loggedInUser.user.id : ''
     let busNo = loggedInUser.busNo
 
-    console.log(price)
-    console.log(userId)
-    console.log(busNo)
-
     const deductFromUser = async () => {
       try {
         const data = await axios.put(`balance/deduct/${userId}/${price*1}`);
@@ -233,7 +146,7 @@ const GenerateTicket = () => {
         };
 
         const response = await axios.post('tickets', ticketData);
-        console.log('Ticket saved successfully:', response.data);
+        console.log('Ticket saved successfully:');
       } catch (error) {
         console.error('Error saving ticket:', error);
       }
