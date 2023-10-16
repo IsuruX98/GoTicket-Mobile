@@ -1,8 +1,25 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 const Avatar = require("../assets/User-avatar.svg.png");
+import Axios from "axios";
 
 const PassengerProfile = () => {
+
+    const[profileData, setProfileData] = useState({});
+
+    useEffect(() => {
+
+        Axios.get("http://localhost:8090/passenger/")
+            .then((response) => {
+
+                setProfileData(response.data);
+            })
+            .catch((error) => {
+
+                console.error("Error fetching data from backend:", error);
+            });
+    }, []);
+
     return (
         <View style={styles.container}>
 
@@ -10,9 +27,9 @@ const PassengerProfile = () => {
                 <Image source={Avatar} style={{ width: 100, height: 100 }} />
             </View>
             <View style={styles.profileInfo}>
-                <Text style={styles.username}>Yasiru Deshan</Text>
-                <Text style={styles.title}>Passenger</Text>
-                <Text style={styles.email}>rpyasiru@gmail.com</Text>
+                <Text style={styles.username}>{profileData.name}</Text>
+                <Text style={styles.title}>{profileData.role}</Text>
+                <Text style={styles.email}>{profileData.email}</Text>
             </View>
         </View>
     );
