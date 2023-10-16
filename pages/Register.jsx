@@ -5,9 +5,9 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Modal,
-  FlatList,
 } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
+import axios from "../apis/axios";
 
 const Register = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -15,7 +15,6 @@ const Register = ({ navigation }) => {
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isModalVisible, setModalVisible] = useState(false);
   const [selectedType, setSelectedType] = useState("passenger");
 
   const userTypes = [
@@ -24,94 +23,108 @@ const Register = ({ navigation }) => {
   ];
 
   const handleRegister = () => {
-    // After successful registration, navigate to the appropriate screen based on selectedType
-    if (selectedType === "passenger") {
-      // Navigate to Passenger Dashboard
-      navigation.navigate("PassengerDashboard");
-    } else if (selectedType === "inspector") {
-      // Navigate to Inspector Dashboard
-      navigation.navigate("InspectorDashboard");
-    }
-  };
+    const registrationData = {
+      name: name,
+      contactNumber: mobile,
+      email: email,
+      password: password,
+      role: selectedType.charAt(0).toUpperCase() + selectedType.slice(1), // Capitalize the first letter
+      uniqueField: "WP-1024",
+    };
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
-
-  const selectUserType = (type) => {
-    setSelectedType(type);
-    toggleModal();
+    // Make a POST request to the registration endpoint
+    axios.post("user/signup", registrationData)
+        .then(response => {
+          // Registration successful, navigate to the appropriate screen
+          if (selectedType === "passenger") {
+            navigation.navigate("Login");
+          } else if (selectedType === "inspector") {
+            navigation.navigate("Login");
+          }
+        })
+        .catch(error => {
+          // Handle registration error, e.g., show an error message
+          console.error("Registration failed:", error);
+          // You can show an error message to the user here
+        });
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Register</Text>
-      <TouchableOpacity style={styles.dropdownButton} onPress={toggleModal}>
-        <Text>{selectedType === "passenger" ? "Passenger" : "Inspector"}</Text>
-      </TouchableOpacity>
-      <Modal
-        visible={isModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={toggleModal}
-      >
-        <View style={styles.modalContainer}>
-          <FlatList
-            data={userTypes}
-            keyExtractor={(item) => item.value}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.modalItem}
-                onPress={() => selectUserType(item.value)}
-              >
-                <Text>{item.label}</Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      </Modal>
-      <TextInput
-        style={styles.input}
-        placeholder="Name"
-        onChangeText={(text) => setName(text)}
-        value={name}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        onChangeText={(text) => setEmail(text)}
-        value={email}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Mobile Number"
-        onChangeText={(text) => setMobile(text)}
-        value={mobile}
-        keyboardType="phone-pad"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        onChangeText={(text) => setPassword(text)}
-        value={password}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        secureTextEntry
-        onChangeText={(text) => setConfirmPassword(text)}
-        value={confirmPassword}
-      />
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Register</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-        <Text style={styles.signInText}>Already have an account? Sign In</Text>
-      </TouchableOpacity>
-    </View>
+      <View style={styles.container}>
+        <Text style={styles.heading}>Register</Text>
+        <RNPickerSelect
+            placeholder={{
+              label: "Select User Type",
+              value: null,
+            }}
+            items={userTypes}
+            onValueChange={(value) => setSelectedType(value)}
+            style={pickerSelectStyles}
+            value={selectedType}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Name"
+            onChangeText={(text) => setName(text)}
+            value={name}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Email"
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Mobile Number"
+            onChangeText={(text) => setMobile(text)}
+            value={mobile}
+            keyboardType="phone-pad"
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            secureTextEntry
+            onChangeText={(text) => setConfirmPassword(text)}
+            value={confirmPassword}
+        />
+        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+          <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.signInText}>Already have an account? Sign In</Text>
+        </TouchableOpacity>
+      </View>
   );
 };
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    height: 40,
+    width: "100%",
+    borderColor: "#333333",
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+    borderRadius: 10,
+  },
+  inputAndroid: {
+    height: 40,
+    width: "100%",
+    borderColor: "#333333",
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+    borderRadius: 10,
+  },
+});
 
 const styles = StyleSheet.create({
   container: {
