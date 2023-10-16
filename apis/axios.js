@@ -2,7 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const instance = axios.create({
-    baseURL: 'http://192.168.1.170:8090/',
+   baseURL: 'http://192.168.1.170:8090/',
+    //baseURL: 'http://localhost:8090/',
 });
 
 // Set up request interceptor to attach the authorization token to outgoing requests
