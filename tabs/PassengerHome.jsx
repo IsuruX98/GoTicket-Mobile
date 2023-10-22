@@ -9,6 +9,7 @@ const PassengerHome = () => {
   //  const accountBalance = 1498; // Replace with user's account balance
 
     const[profileData, setProfileData] = useState({});
+    const[balance, setBalance] = useState(0.0);
 
     useEffect(() => {
 
@@ -19,9 +20,25 @@ const PassengerHome = () => {
             })
             .catch((error) => {
 
-                console.error("Error fetching data from backend:", error);
+                console.error("Error fetching user data from backend:", error);
             });
     }, []);
+
+
+
+    useEffect(() => {
+        if (profileData.id) {
+            Axios.get(`passenger/acc-balance/${profileData.id}`)
+                .then((response1) => {
+                    console.log("balance" + response1.data);
+                    setBalance(response1.data);
+                })
+                .catch((error) => {
+                    console.error("Error fetching balance from backend:", error);
+                });
+        }
+    }, [profileData.id]);
+
 
     return (
         <View style={styles.container}>
@@ -40,10 +57,11 @@ const PassengerHome = () => {
                <Image source={Bus} style={styles.busImage} />
            </View>
             <View style={styles.balanceContainer}>
-                <Text style={styles.balanceText}>Account Balance:</Text>
-                <TouchableOpacity style={styles.rechargeButton}>
-                    <Text style={styles.buttonText}>Recharge Account</Text>
-                </TouchableOpacity>
+                <Text style={styles.balanceText}>Account Balance: {balance}</Text>
+                {/*<TouchableOpacity style={styles.rechargeButton}>*/}
+                {/*    <Text style={styles.buttonText}>Recharge Account</Text>*/}
+
+                {/*</TouchableOpacity>*/}
             </View>
         </View>
     );
@@ -96,8 +114,9 @@ const styles = StyleSheet.create({
     },
     balanceText: {
         marginTop: 72,
-        fontSize: 24,
+        fontSize: 28,
         marginBottom: 10,
+        fontWeight: "bold"
 
     },
     rechargeButton: {
