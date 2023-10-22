@@ -7,6 +7,8 @@ const InspectorScan = ({ navigation }) => {
     const [scanned, setScanned] = useState(false);
     const [scannedData, setScannedData] = useState('');
 
+    console.log(scannedData)
+
     useEffect(() => {
         (async () => {
             const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -20,6 +22,10 @@ const InspectorScan = ({ navigation }) => {
             // Attempt to parse the scanned data as JSON
             const parsedData = JSON.parse(data);
             setScannedData(parsedData);
+            if (parsedData && Object.keys(parsedData).length === 2 && 'id' in parsedData && 'name' in parsedData) {
+                // Navigate to GenerateTicket screen with scanned data
+                navigation.navigate('GenerateTicket', { scannedData: parsedData });
+            }
         } catch (error) {
             // Handle parsing error, if any
             // If parsing fails, set scanned data as is (non-JSON)
