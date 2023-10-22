@@ -66,22 +66,12 @@ const GenerateTicket = () => {
     }
   }, [scannedData]);
 
-  useEffect(() => {
-    const tickets = parseInt(numberOfTickets, 10);
-    const ticketDetails = {
-      name: "John Doe",
-      date: new Date().toLocaleDateString(),
-      time: new Date().toLocaleTimeString(),
-      route: loggedInUser.route?loggedInUser.route.routeName:'',
-      startStation: loggedInUser.route?loggedInUser.route.startPoint:'',
-      endStation: loggedInUser.route?loggedInUser.route.endPoint:'',
-      price: loggedInUser.route ? loggedInUser.route.ticketPrice : 1,
-      numberOfTickets: tickets,
-    };
+  console.log(loggedInUser)
 
-    const jsonTicketDetails = JSON.stringify(ticketDetails);
-    setQRData(jsonTicketDetails);
-  }, [numberOfTickets, selectedRoute]);
+  // useEffect(() => {
+  //
+  //
+  // }, [numberOfTickets, selectedRoute]);
 
   const handlePurchase = async () => {
     const tickets = parseInt(numberOfTickets, 10);
@@ -117,7 +107,7 @@ const GenerateTicket = () => {
     Keyboard.dismiss();
 
     let price = loggedInUser.route ? loggedInUser.route.ticketPrice : 1
-    let userId = loggedInUser.route ? loggedInUser.user.id : ''
+    let userId = scannedData.id
     let busNo = loggedInUser.busNo
 
     const deductFromUser = async () => {
@@ -140,9 +130,24 @@ const GenerateTicket = () => {
 
     const saveTicket = async () => {
       try {
+
+        const tickets = parseInt(numberOfTickets, 10);
+        const ticketDetails = {
+          name: scannedData.name,
+          date: new Date().toLocaleDateString(),
+          time: new Date().toLocaleTimeString(),
+          route: loggedInUser.route?loggedInUser.route.routeName:'',
+          startStation: loggedInUser.route?loggedInUser.route.startPoint:'',
+          endStation: loggedInUser.route?loggedInUser.route.endPoint:'',
+          price: loggedInUser.route?loggedInUser.route.ticketPrice:0,
+          numberOfTickets: tickets,
+        };
+
+        const jsonTicketDetails = JSON.stringify(ticketDetails);
+
         const ticketData = {
-          id: 3,
-          qrData: qrData,
+          id: scannedData.id,
+          qrData: jsonTicketDetails,
         };
 
         const response = await axios.post('tickets', ticketData);
@@ -203,11 +208,11 @@ const GenerateTicket = () => {
         >
           <Text style={styles.buttonText}>Purchase Tickets</Text>
         </TouchableOpacity>
-        {qrData && (
-          <View style={styles.qrCodeContainer}>
-            <QRCode value={qrData} size={200} />
-          </View>
-        )}
+        {/*{qrData && (*/}
+        {/*  <View style={styles.qrCodeContainer}>*/}
+        {/*    <QRCode value={qrData} size={200} />*/}
+        {/*  </View>*/}
+        {/*)}*/}
       </View>
     </TouchableWithoutFeedback>
   );
