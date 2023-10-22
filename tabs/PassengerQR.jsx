@@ -33,7 +33,7 @@ const PassengerQR = () => {
 
     return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <Text style={styles.text}>My QR</Text>
+            <Text style={styles.heading}>My QR</Text>
             {/* Render the QR code if qrCodeData is available */}
             {qrCodeData ? <QRCode value={qrCodeData} size={200} /> : null}
         </View>
@@ -46,9 +46,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
-    text: {
-        marginBottom: 40,
-        fontSize: 24,
+    heading: {
+        fontSize: 30,
+        fontWeight: "900",
+        color: "#9744be",
+        marginBottom: 20,
     },
 });
 

@@ -7,6 +7,7 @@ import Profile from "../tabs/PassengerProfile";
 import MyQR from "../tabs/PassengerQR";
 import PassengerHome from "../tabs/PassengerHome";
 import MyTicket from "../tabs/MyTicket";
+import BusAccount from "../tabs/BusAccount";
 
 const home = "Home";
 const profile = "Profile";
@@ -15,7 +16,7 @@ const myTicket = "My Ticket";
 
 const Tab = createBottomTabNavigator();
 
-const Passenger = () => {
+const Passenger = ({navigation}) => {
     return (
         <NavigationContainer independent={true}>
             <Tab.Navigator
@@ -64,9 +65,9 @@ const Passenger = () => {
 
                 <Tab.Screen
                     name={profile}
-                    component={Profile}
-                    options={{ title: "Profile", headerShown: false }} // Hide the header for this screen
-                />
+                    options={{ headerShown: false }}>
+                    {(props) => <Profile {...props} navigation={navigation} />}
+                </Tab.Screen>
 
 
             </Tab.Navigator>
