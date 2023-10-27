@@ -19,9 +19,9 @@ GoTicket is the result of collaborative efforts from a team of passionate indivi
 
 ## Screenshots
 
-![IMG_8641](https://github.com/IsuruX98/GoTicket-Mobile/assets/104721314/73094afd-94de-4048-9e2d-8fb72f1547d2)
+![IMG_8641](https://github.com/IsuruX98/GoTicket-Mobile/assets/104721314/98bc9494-427d-4d2a-902a-b7c403b22e3c)
 
-![IMG_8642](https://github.com/IsuruX98/GoTicket-Mobile/assets/104721314/27d5ca7a-8077-4c88-abd2-25f55f197bf0)
+![IMG_8642](https://github.com/IsuruX98/GoTicket-Mobile/assets/104721314/c00f9024-506d-4b40-8259-44de6df7672a)
 
 
 ## Getting Started
