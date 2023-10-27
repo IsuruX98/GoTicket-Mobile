@@ -17,6 +17,13 @@ GoTicket is the result of collaborative efforts from a team of passionate indivi
 3. **Umesha Dilshani** - manager part and the backend of the app
 4. **Yasiru Deshan** - passenger part of the app
 
+## Screenshots
+
+![IMG_8641](https://github.com/IsuruX98/GoTicket-Mobile/assets/104721314/73094afd-94de-4048-9e2d-8fb72f1547d2)
+
+![IMG_8642](https://github.com/IsuruX98/GoTicket-Mobile/assets/104721314/27d5ca7a-8077-4c88-abd2-25f55f197bf0)
+
+
 ## Getting Started
 
 ### Prerequisites
